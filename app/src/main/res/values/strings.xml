@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">teamproject</string>
+
+    <string name="editID_hint">6~15자 영어/숫자 조합으로 작성</string>
+    <string name="editPW_hint">8~15자 영어/숫자 조합으로 작성</string>
+    <string name="nickname_hint">영어로 작성</string>
 </resources>
