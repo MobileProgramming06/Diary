@@ -1,11 +1,11 @@
-package com.example.teamproject
+package com.example.teamproject.DBHelper
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DBHelper(context: Context) : SQLiteOpenHelper(context, "Login.db", null, 1) {
+class LoginDBHelper(context: Context) : SQLiteOpenHelper(context, "Login.db", null, 1) {
 
     // DB 이름을 Login.db로 설정
     companion object {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    tools:context=".EditTodoActivity">
+
+    <EditText
+        android:id="@+id/todoTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="제목을 입력해주세요."
+        android:layout_marginBottom="10dp"
+        />
+
+    <EditText
+        android:id="@+id/todoContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:hint="내용을 입력해주세요."
+        android:layout_weight="1"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        android:layout_marginBottom="10dp"
+        />
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="저장"
+        android:textAllCaps="false"
+        />
+
+</LinearLayout>
