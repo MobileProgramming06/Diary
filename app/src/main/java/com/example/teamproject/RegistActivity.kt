@@ -4,8 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.teamproject.DBHelper
-import com.example.teamproject.LoginActivity
+import com.example.teamproject.DBHelper.LoginDBHelper
 import com.example.teamproject.databinding.ActivityRegistBinding
 import java.util.regex.Pattern
 
@@ -15,7 +14,7 @@ val EngPattern = "^[A-Za-z]*$"
 
 class RegistActivity : AppCompatActivity() {
     lateinit var binding: ActivityRegistBinding
-    var DB : DBHelper? = null
+    var DB : LoginDBHelper? = null
     var CheckID: Boolean = false
     var CheckNick: Boolean = false
 
@@ -24,7 +23,7 @@ class RegistActivity : AppCompatActivity() {
         binding = ActivityRegistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        DB = DBHelper(this)
+        DB = LoginDBHelper(this)
 
         // 아이디 중복 확인
         binding.checkIDBtn.setOnClickListener {

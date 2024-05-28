@@ -4,18 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.teamproject.DBHelper.LoginDBHelper
 import com.example.teamproject.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
-    var DB: DBHelper? = null
+    var DB: LoginDBHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        DB = DBHelper(this)
+        DB = LoginDBHelper(this)
 
         binding.loginBtn.setOnClickListener {
             val user = binding.editTextId.text.toString()

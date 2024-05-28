@@ -13,7 +13,14 @@
         android:theme="@style/Theme.Teamproject"
         tools:targetApi="31">
         <activity
-            android:name=".DBHelper"
+            android:name=".EditTodoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TodoActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".DBHelper.LoginDBHelper"
             android:exported="false" />
         <activity
             android:name=".RegistActivity"

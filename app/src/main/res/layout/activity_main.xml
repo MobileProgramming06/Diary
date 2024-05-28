@@ -16,4 +16,10 @@
         android:layout_height="wrap_content"
         android:text="로그인 페이지로 이동" />
 
+    <Button
+        android:id="@+id/toTodo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Todo List 페이지로 이동" />
+
 </LinearLayout>

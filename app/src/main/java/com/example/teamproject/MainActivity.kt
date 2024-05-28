@@ -17,5 +17,10 @@ class MainActivity : AppCompatActivity() {
             var intent = Intent(this, LoginActivity:: class.java)
             startActivity(intent)
         }
+
+        binding.toTodo.setOnClickListener {
+            var intent = Intent(this, TodoActivity:: class.java)
+            startActivity(intent)
+        }
     }
 }
