@@ -29,6 +29,10 @@ class TodoAdapter(val context: Context): RecyclerView.Adapter<TodoAdapter.TodoVi
             else
                 title.paintFlags = title.paintFlags and STRIKE_THRU_TEXT_FLAG.inv()
 
+            itemView.setOnClickListener {
+                itemClickListener.onClick(it, layoutPosition, list[layoutPosition].id)
+            }
+
             checkbox.setOnClickListener {
                 itemCheckBoxClickListener.onClick(it, layoutPosition, list[layoutPosition].id)
             }
@@ -60,5 +64,15 @@ class TodoAdapter(val context: Context): RecyclerView.Adapter<TodoAdapter.TodoVi
 
     fun setItemCheckBoxClickListener(itemCheckBoxClickListener: ItemCheckBoxClickListener) {
         this.itemCheckBoxClickListener = itemCheckBoxClickListener
+    }
+
+    interface ItemClickListener {
+        fun onClick(view: View, position: Int, itemId: Long)
+    }
+
+    private lateinit var itemClickListener: ItemClickListener
+
+    fun setItemClickListener(itemClickListener: ItemClickListener) {
+        this.itemClickListener = itemClickListener
     }
 }

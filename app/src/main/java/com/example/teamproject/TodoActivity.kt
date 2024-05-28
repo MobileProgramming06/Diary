@@ -42,7 +42,25 @@ class TodoActivity : AppCompatActivity() {
                     todo?.let {
                         it.isChecked = !it.isChecked
                         DB.update(it)
-                        loadTodos()
+                        withContext(Dispatchers.Main) {
+                            loadTodos()
+                        }
+                    }
+                }
+            }
+        })
+
+        todoAdapter.setItemClickListener(object: TodoAdapter.ItemClickListener {
+            override fun onClick(view: View, position: Int, itemId: Long) {
+                Toast.makeText(this@TodoActivity, "$itemId", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    val todo = DB.getTodoById(itemId)
+                    val intent = Intent(this@TodoActivity, EditTodoActivity::class.java).apply {
+                        putExtra("type", "EDIT")
+                        putExtra("item", todo)
+                    }
+                    withContext(Dispatchers.Main) {
+                        requestActivity.launch(intent)
                     }
                 }
             }
@@ -67,11 +85,10 @@ class TodoActivity : AppCompatActivity() {
     }
 
     private val requestActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        result -> if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val todo = data?.getSerializableExtra("todo") as Todo
+        if (it.resultCode == RESULT_OK) {
+            val todo = it.data?.getSerializableExtra("todo") as Todo
 
-            when (data.getIntExtra("flag", -1)) {
+            when (it.data?.getIntExtra("flag", -1)) {
                 0 -> {      // 추가
                     CoroutineScope(Dispatchers.IO).launch {
                         val isSuccess = DB.insertData(todo.title, todo.content, todo.timestamp, todo.isChecked)
@@ -86,7 +103,13 @@ class TodoActivity : AppCompatActivity() {
                     }
                 }
                 1 -> {      // 수정
-
+                    CoroutineScope(Dispatchers.IO).launch {
+                        DB.update(todo)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@TodoActivity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+                            loadTodos()
+                        }
+                    }
                 }
             }
         }
