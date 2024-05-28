@@ -20,7 +20,6 @@ class EditTodoActivity : AppCompatActivity() {
         DB = TodoDBHelper(this)
 
         val type = intent.getStringExtra("type")
-
         if (type.equals("ADD"))
             binding.saveBtn.text = "추가하기"
         else
