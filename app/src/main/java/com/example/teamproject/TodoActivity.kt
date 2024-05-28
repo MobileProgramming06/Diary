@@ -2,6 +2,8 @@ package com.example.teamproject
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -74,6 +76,37 @@ class TodoActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_opton, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item?.itemId) {
+            R.id.menu_item_delete -> {
+                val checkedTodoIds = DB.getAllCheckedTodoIds()
+                if (checkedTodoIds.isNotEmpty()) {
+                    checkedTodoIds.forEach {
+                        todoId -> CoroutineScope(Dispatchers.IO).launch {
+                            val result = DB.deleteTodoById(todoId)
+                            if (result > 0) {
+                                val updatedTodos = DB.getAllTodos()
+                                withContext(Dispatchers.Main) {
+                                    todoAdapter.update(updatedTodos)
+                                    Toast.makeText(this@TodoActivity, "선택된 항목이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(this, "삭제할 항목을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     private fun loadTodos() {
         CoroutineScope(Dispatchers.IO).launch {

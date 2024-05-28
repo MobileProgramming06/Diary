@@ -94,6 +94,22 @@ class TodoDBHelper(context: Context) : SQLiteOpenHelper(context, "TodoList.db", 
         return todoList
     }
 
+    fun getAllCheckedTodoIds(): List<Long> {
+        val todoIds = mutableListOf<Long>()
+        val db = this.readableDatabase
+        var cursor = db.query(TABLE_NAME, arrayOf(ID), "$IsChecked=?", arrayOf("1"), null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                do {
+                    val id = it.getLong(it.getColumnIndex(ID))
+                    todoIds.add(id)
+                } while (it.moveToNext())
+            }
+        }
+        cursor?.close()
+        return todoIds
+    }
+
     fun update(todo: Todo?): Int {
         val db = this.readableDatabase
         val contentValues = ContentValues()
