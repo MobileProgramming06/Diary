@@ -22,5 +22,10 @@ class MainActivity : AppCompatActivity() {
             var intent = Intent(this, TodoActivity:: class.java)
             startActivity(intent)
         }
+
+        binding.toCal.setOnClickListener{
+            var intent = Intent(this, CalActivity :: class.java)
+            startActivity(intent)
+        }
     }
 }
