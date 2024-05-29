@@ -69,7 +69,7 @@ class TodoActivity : AppCompatActivity() {
         })
 
         binding.addBtn.setOnClickListener {
-            var intent = Intent(this, EditTodoActivity:: class.java).apply {
+            val intent = Intent(this, EditTodoActivity:: class.java).apply {
                 putExtra("type", "ADD")
             }
             requestActivity.launch(intent)
