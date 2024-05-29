@@ -20,13 +20,16 @@
             android:exported="false" />
         <activity
             android:name=".DetailCalActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".CalActivity"/>
         <activity
             android:name=".EditCalActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".DetailCalActivity"/>
         <activity
             android:name=".CalActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".EditTodoActivity"
             android:exported="false"
