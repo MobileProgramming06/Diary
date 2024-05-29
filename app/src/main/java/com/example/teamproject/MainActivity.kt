@@ -18,10 +18,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 기존의 클릭 리스너들을 유지하고, 감정 텍스트뷰를 초기화합니다.
-        binding.emotionTextView.text = "오늘의 감정: ${getEmotionForToday()}"
-
-        // 기존 클릭 리스너들을 유지합니다.
         binding.toLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)

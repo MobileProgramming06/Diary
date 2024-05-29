@@ -7,10 +7,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.teamproject.DBHelper.EmotionDBHelper
+import com.example.teamproject.R
 
-class AddEmotionActivity : AppCompatActivity() {
+class EmotionActivity : AppCompatActivity() {
 
     private lateinit var editTextEmotion: EditText
+    private lateinit var dbHelper: EmotionDBHelper
+    private var selectedDate: String? = null
 
     companion object {
         const val EXTRA_EMOTION = "com.example.teamproject.EXTRA_EMOTION"
@@ -22,17 +26,17 @@ class AddEmotionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_emotion)
 
         editTextEmotion = findViewById(R.id.edit_text_emotion)
+        dbHelper = EmotionDBHelper(this)
 
-        val date = intent.getStringExtra(EXTRA_DATE)
-        title = "Emotion for $date"
+        selectedDate = intent.getStringExtra(EXTRA_DATE)
 
         val buttonSave: Button = findViewById(R.id.button_save)
         buttonSave.setOnClickListener {
-            saveEmotion(date ?: "")
+            saveEmotion()
         }
     }
 
-    private fun saveEmotion(date: String) {
+    private fun saveEmotion() {
         val emotion = editTextEmotion.text.toString()
 
         if (emotion.trim().isEmpty()) {
@@ -40,9 +44,12 @@ class AddEmotionActivity : AppCompatActivity() {
             return
         }
 
+        selectedDate?.let {
+            dbHelper.insertEmotion(it, emotion)
+        }
+
         val data = Intent().apply {
             putExtra(EXTRA_EMOTION, emotion)
-            putExtra(EXTRA_DATE, date)
         }
 
         setResult(Activity.RESULT_OK, data)

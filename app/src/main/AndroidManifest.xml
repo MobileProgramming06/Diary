@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Teamproject"
         tools:targetApi="31">
         <activity
+            android:name=".DBHelper.EmotionDBHelper"
+            android:exported="false" />
+        <activity
+            android:name=".Emotion"
+            android:exported="false" />
+        <activity
             android:name=".EmotionActivity"
             android:exported="false" />
         <activity
@@ -21,15 +27,15 @@
         <activity
             android:name=".DetailCalActivity"
             android:exported="false"
-            android:parentActivityName=".CalActivity"/>
+            android:parentActivityName=".CalActivity" />
         <activity
             android:name=".EditCalActivity"
             android:exported="false"
-            android:parentActivityName=".DetailCalActivity"/>
+            android:parentActivityName=".DetailCalActivity" />
         <activity
             android:name=".CalActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".EditTodoActivity"
             android:exported="false"
