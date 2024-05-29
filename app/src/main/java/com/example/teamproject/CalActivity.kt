@@ -1,129 +1,171 @@
 package com.example.teamproject
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.teamproject.DBHelper.TodoDBHelper
 import com.example.teamproject.databinding.ActivityCalBinding
+import com.example.teamproject.databinding.ItemCalBinding
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.Serializable
+
+
+data class Cal (
+    val id: Long,
+    val content: String
+):Serializable
 
 class CalActivity : AppCompatActivity() {
-    lateinit var binding : ActivityCalBinding
-    var userID: String = "userID"
-    lateinit var fname: String
-    lateinit var str: String
+    lateinit var binding: ActivityCalBinding
+    lateinit var calAdapter: CalAdapter
+    private val calDataMap = mutableMapOf<String, MutableList<Cal>>()
+    private var selectedDate: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        calAdapter = CalAdapter(this)
+        binding.calData.layoutManager = LinearLayoutManager(this)
+        binding.calData.adapter = calAdapter
+
+        binding.addBtn.setOnClickListener {
+            val intent = Intent(this, EditCalActivity::class.java).apply {
+                putExtra("type", "ADD")
+            }
+            requestActivity.launch(intent)
+        }
+
+
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            binding.calTextView.visibility = View.VISIBLE
-            binding.saveBtn.visibility = View.VISIBLE
-            binding.contentEdit.visibility = View.VISIBLE
-            binding.content.visibility = View.INVISIBLE
-            binding.modifyBtn.visibility = View.INVISIBLE
-            binding.delBtn.visibility = View.INVISIBLE
-            binding.calTextView.text = String.format("%d / %d / %d", year, month + 1, dayOfMonth)
-            binding.contentEdit.setText("")
-            checkDay(year, month, dayOfMonth, userID)
+            selectedDate = "$year-${month + 1}-$dayOfMonth"
+            updateCalList()
         }
 
-        binding.saveBtn.setOnClickListener {
-            saveDiary(fname)
-            binding.contentEdit.visibility = View.INVISIBLE
-            binding.saveBtn.visibility = View.INVISIBLE
-            binding.modifyBtn.visibility = View.VISIBLE
-            binding.delBtn.visibility = View.VISIBLE
-            str = binding.contentEdit.text.toString()
-            binding.content.text = str
-            binding.content.visibility = View.VISIBLE
-        }
+        val calendar = java.util.Calendar.getInstance()
+        selectedDate =
+            "${calendar.get(java.util.Calendar.YEAR)}-${calendar.get(java.util.Calendar.MONTH) + 1}-${
+                calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            }"
+        updateCalList()
     }
 
-    fun checkDay (cYear: Int, cMonth: Int, cDay: Int, userID: String) {
-        //저장할 파일 이름설정
-        fname = "" + userID + cYear + "-" + (cMonth + 1) + "" + "-" + cDay + ".txt"
-
-        var fileInputStream: FileInputStream
-        try {
-            fileInputStream = openFileInput(fname)
-            val fileData = ByteArray(fileInputStream.available())
-            fileInputStream.read(fileData)
-            fileInputStream.close()
-            str = String(fileData)
-            binding.contentEdit.visibility = View.INVISIBLE
-            binding.content.visibility = View.VISIBLE
-            binding.content.text = str
-            binding.saveBtn.visibility = View.INVISIBLE
-            binding.modifyBtn.visibility = View.VISIBLE
-            binding.delBtn.visibility = View.VISIBLE
-
-            binding.modifyBtn.setOnClickListener {
-                binding.contentEdit.visibility = View.VISIBLE
-                binding.content.visibility = View.INVISIBLE
-                binding.contentEdit.setText(str)
-                binding.saveBtn.visibility = View.VISIBLE
-                binding.modifyBtn.visibility = View.INVISIBLE
-                binding.delBtn.visibility = View.INVISIBLE
-                binding.content.text = binding.contentEdit.text
+    private val requestActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.getSerializableExtra("schedule")?.let {
+                    val schedule = it as Cal
+                    addCalToSelectedDate(schedule)
+                }
+                result.data?.getSerializableExtra("cal")?.let {
+                    val updatedCal = it as Cal
+                    updateCal(updatedCal)
+                }
+                result.data?.getLongExtra("calId", -1)?.let { calId ->
+                    if (calId != -1L) {
+                        removeCal(calId)
+                    }
+                }
             }
+        }
 
-            binding.delBtn.setOnClickListener {
-                binding.content.visibility = View.INVISIBLE
-                binding.modifyBtn.visibility = View.INVISIBLE
-                binding.delBtn.visibility = View.INVISIBLE
-                binding.contentEdit.setText("")
-                binding.contentEdit.visibility = View.VISIBLE
-                binding.saveBtn.visibility = View.VISIBLE
-                removeDiary(fname)
+
+
+    private fun updateCalList() {
+        val calList = calDataMap[selectedDate] ?: mutableListOf()
+        calAdapter.updateCalList(calList)
+    }
+
+    private fun addCalToSelectedDate(cal: Cal) {
+        val calList = calDataMap[selectedDate] ?: mutableListOf()
+        calList.add(cal)
+        calDataMap[selectedDate] = calList
+        updateCalList()
+    }
+
+    private fun updateCal(updatedCal: Cal) {
+        val calList = calDataMap[selectedDate]
+        calList?.let {
+            val index = it.indexOfFirst { cal -> cal.id == updatedCal.id }
+            if (index != -1) {
+                it[index] = updatedCal
+                calDataMap[selectedDate] = it
+                updateCalList()
             }
-            if (binding.content.text == null) {
-                binding.content.visibility = View.INVISIBLE
-                binding.modifyBtn.visibility = View.INVISIBLE
-                binding.delBtn.visibility = View.INVISIBLE
-                binding.content.visibility = View.VISIBLE
-                binding.saveBtn.visibility = View.VISIBLE
-                binding.contentEdit.visibility = View.VISIBLE
+        }
+    }
+
+    private fun removeCal(calId: Long) {
+        val calList = calDataMap[selectedDate]
+        calList?.let {
+            val index = it.indexOfFirst { cal -> cal.id == calId }
+            if (index != -1) {
+                it.removeAt(index)
+                calDataMap[selectedDate] = it
+                updateCalList()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
-    @SuppressLint("WrongConstant")
-    fun removeDiary(readDay: String?) {
-        var fileOutputStream: FileOutputStream
-        try {
-            fileOutputStream = openFileOutput(readDay, MODE_NO_LOCALIZED_COLLATORS)
-            val content = ""
-            fileOutputStream.write(content.toByteArray())
-            fileOutputStream.close()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+    private fun onCalClick(cal: Cal) {
+        val intent = Intent(this, DetailCalActivity::class.java).apply {
+            putExtra("cal", cal)
         }
+        requestActivity.launch(intent)
     }
-
-    // 달력 내용 추가
-    @SuppressLint("WrongConstant")
-    fun saveDiary(readDay: String?) {
-        var fileOutputStream: FileOutputStream
-        try {
-            fileOutputStream = openFileOutput(readDay, MODE_NO_LOCALIZED_COLLATORS)
-            val content = binding.contentEdit.text.toString()
-            fileOutputStream.write(content.toByteArray())
-            fileOutputStream.close()
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-    }
-
 }
+
+
+class CalAdapter(private val context: Context) : RecyclerView.Adapter<CalAdapter.MyViewHolder>(){
+    private var list = mutableListOf<Cal>()
+
+    inner class MyViewHolder(val binding: ItemCalBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(cal: Cal) {
+            binding.diary.text = cal.content
+            binding.root.setOnClickListener {
+                val intent = Intent(context, DetailCalActivity::class.java)
+                intent.putExtra("cal", cal)
+                context.startActivity(intent)
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val binding = ItemCalBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = list[position]
+        holder.bind(item)
+    }
+
+    override fun getItemCount(): Int = list.size
+
+    fun updateCalList(newList: List<Cal>) {
+        list = newList.toMutableList()
+        notifyDataSetChanged()
+    }
+}
+
+
