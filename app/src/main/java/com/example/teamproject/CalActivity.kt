@@ -45,7 +45,7 @@ class CalActivity : AppCompatActivity() {
         binding = ActivityCalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        calAdapter = CalAdapter(this)
+        calAdapter = CalAdapter()
         binding.calData.layoutManager = LinearLayoutManager(this)
         binding.calData.adapter = calAdapter
 
@@ -77,15 +77,8 @@ class CalActivity : AppCompatActivity() {
                     val schedule = it as Cal
                     addCalToSelectedDate(schedule)
                 }
-                result.data?.getSerializableExtra("cal")?.let {
-                    val updatedCal = it as Cal
-                    updateCal(updatedCal)
-                }
-                result.data?.getLongExtra("calId", -1)?.let { calId ->
-                    if (calId != -1L) {
-                        removeCal(calId)
-                    }
-                }
+
+
             }
         }
 
@@ -103,30 +96,6 @@ class CalActivity : AppCompatActivity() {
         updateCalList()
     }
 
-    private fun updateCal(updatedCal: Cal) {
-        val calList = calDataMap[selectedDate]
-        calList?.let {
-            val index = it.indexOfFirst { cal -> cal.id == updatedCal.id }
-            if (index != -1) {
-                it[index] = updatedCal
-                calDataMap[selectedDate] = it
-                updateCalList()
-            }
-        }
-    }
-
-    private fun removeCal(calId: Long) {
-        val calList = calDataMap[selectedDate]
-        calList?.let {
-            val index = it.indexOfFirst { cal -> cal.id == calId }
-            if (index != -1) {
-                it.removeAt(index)
-                calDataMap[selectedDate] = it
-                updateCalList()
-            }
-        }
-    }
-
     private fun onCalClick(cal: Cal) {
         val intent = Intent(this, DetailCalActivity::class.java).apply {
             putExtra("cal", cal)
@@ -136,17 +105,13 @@ class CalActivity : AppCompatActivity() {
 }
 
 
-class CalAdapter(private val context: Context) : RecyclerView.Adapter<CalAdapter.MyViewHolder>(){
+class CalAdapter : RecyclerView.Adapter<CalAdapter.MyViewHolder>(){
     private var list = mutableListOf<Cal>()
 
     inner class MyViewHolder(val binding: ItemCalBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(cal: Cal) {
             binding.diary.text = cal.content
-            binding.root.setOnClickListener {
-                val intent = Intent(context, DetailCalActivity::class.java)
-                intent.putExtra("cal", cal)
-                context.startActivity(intent)
-            }
+
         }
     }
 
