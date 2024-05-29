@@ -12,6 +12,7 @@ class EditCalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "Add diary"
 
         val type = intent.getStringExtra("type")
         var cal: Cal? = null

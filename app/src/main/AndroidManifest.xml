@@ -22,9 +22,6 @@
             android:name=".EmotionActivity"
             android:exported="false" />
         <activity
-            android:name=".DiaryEntry"
-            android:exported="false" />
-        <activity
             android:name=".DetailCalActivity"
             android:exported="false"
             android:parentActivityName=".CalActivity" />

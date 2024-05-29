@@ -22,6 +22,7 @@ class RegistActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegistBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "join"
 
         DB = LoginDBHelper(this)
 

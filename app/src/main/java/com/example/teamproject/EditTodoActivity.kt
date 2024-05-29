@@ -17,6 +17,7 @@ class EditTodoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditTodoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "Add List"
 
         DB = TodoDBHelper(this)
 

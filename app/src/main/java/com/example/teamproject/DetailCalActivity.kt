@@ -13,6 +13,7 @@ class DetailCalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailCalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "diary"
 
 
         // 선택된 일기 데이터 받기

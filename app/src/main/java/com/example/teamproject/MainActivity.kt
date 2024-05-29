@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "Day Day"
 
         binding.toLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)

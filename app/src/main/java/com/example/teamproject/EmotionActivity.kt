@@ -24,6 +24,7 @@ class EmotionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_emotion)
+        title="Emoji"
 
         editTextEmotion = findViewById(R.id.edit_text_emotion)
         dbHelper = EmotionDBHelper(this)

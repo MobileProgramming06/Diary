@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ class CalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "Calender"
 
         calAdapter = CalAdapter(this)
         binding.calData.layoutManager = LinearLayoutManager(this)
@@ -43,11 +45,13 @@ class CalActivity : AppCompatActivity() {
                 putExtra("type", "ADD")
             }
             startActivityForResult(intent, ADD_CAL_REQUEST_CODE)
+            requestActivity.launch(intent)
         }
 
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             selectedDate = "$year-${month + 1}-$dayOfMonth"
             onDateSelected(year, month, dayOfMonth)
+            updateCalList()
         }
 
         val calendar = java.util.Calendar.getInstance()
@@ -80,6 +84,24 @@ class CalActivity : AppCompatActivity() {
         }
     }
 
+    private fun addCalToSelectedDate(cal: Cal) {
+        val calList = calDataMap[selectedDate] ?: mutableListOf()
+        calList.add(cal)
+        calDataMap[selectedDate] = calList
+        updateCalList()
+    }
+
+    private val requestActivity =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.getSerializableExtra("schedule")?.let {
+                    val schedule = it as Cal
+                    addCalToSelectedDate(schedule)
+                }
+            }
+        }
+
+
     private fun onDateSelected(year: Int, month: Int, dayOfMonth: Int) {
         val selectedDate = "$year-${month + 1}-$dayOfMonth"
         val intent = Intent(this, EmotionActivity::class.java).apply {
@@ -104,6 +126,11 @@ class CalAdapter(private val context: Context) : RecyclerView.Adapter<CalAdapter
     inner class MyViewHolder(val binding: ItemCalBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(cal: Cal) {
             binding.diary.text = cal.content
+            binding.root.setOnClickListener {
+                val intent = Intent(context, DetailCalActivity::class.java)
+                intent.putExtra("cal", cal)
+                context.startActivity(intent)
+            }
         }
     }
 

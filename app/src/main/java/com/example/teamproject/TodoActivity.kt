@@ -25,6 +25,7 @@ class TodoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTodoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        title = "Todo List"
 
         // DB 초기화
         DB = TodoDBHelper(this)
